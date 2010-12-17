@@ -283,7 +283,7 @@ sub _munge_changes {
   my $delim  = $self->delim;
 
   $content =~ s{ (\Q$delim->[0]\E \s* \$NEXT \s* \Q$delim->[1]\E) }
-               {$1\n\n  - Generated from $distfile\n\n}xs;
+               {$1\n\n  - Generated from $distfile}xs;
 
   $file->content($content);
 }

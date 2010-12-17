@@ -64,8 +64,8 @@ sub _build_new_name {
 
 =attr cpan_mirror
 
-This is a URI to a CPAN mirror.  Defaults to C<http://cpan.dagolden.com/>
-It may be any URI that L<File::Fetch> can cope with.
+This is a URI to a CPAN mirror.  It must be an 'http' URI.
+Defaults to C<http://cpan.dagolden.com/>
 
 =cut
 
@@ -307,23 +307,33 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 
-=for Pod::Coverage gather_files
+=for Pod::Coverage gather_files munge_file after_release
 
-=begin wikidoc
+=head1 SYNOPSIS
 
-= SYNOPSIS
+  [Doppelgaenger]
+  source_module = Foo::Bar
+  strip_pod = 1
 
-  use Dist::Zilla::Plugin::Doppelgaenger;
+=head1 DESCRIPTION
 
-= DESCRIPTION
-
-This [Dist::Zilla] plugin creates a new CPAN distribution with a new name based
-on a source distribution.
+This L<Dist::Zilla> plugin creates a new CPAN distribution with a new name
+based on the latest stable distribution of a source module.
 
 Please do not do this without the permission of the authors or maintainers
 of the source.
 
-=end wikidoc
+If the Changes files is flagged to be updated, you must have C<{{$NEXT}}> in
+your Changes files and use the C<NextRelease> plugin.  The source distribution
+will be added on a line in the Changes file after C<{{$NEXT}}>.  After release,
+your original Changes file might look something like this:
+
+  0.001     2010-12-17 08:37:08 EST5EDT
+
+    - Generated from AUTHOR/Foo-Bar-1.23.tar.gz
+
+If you strip Pod, you may with to explore replacing it with new Pod using
+the L<Dist::Zilla::Plugin::AppendExternalData> plugin.
 
 =cut
 

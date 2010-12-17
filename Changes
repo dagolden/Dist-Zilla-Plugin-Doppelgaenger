@@ -2,6 +2,8 @@ Revision history for Dist-Zilla-Plugin-Doppelgaenger
 
 {{$NEXT}}
 
+  - Added 'strip_version' option
+
 0.001     2010-12-17 08:50:22 EST5EDT
 
   - First draft

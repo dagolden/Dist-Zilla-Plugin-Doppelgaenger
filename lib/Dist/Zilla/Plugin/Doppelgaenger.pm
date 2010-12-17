@@ -76,10 +76,26 @@ has cpan_mirror => (
   default => 'http://cpan.dagolden.com/'
 );
 
+=attr strip_version
+
+Boolean for whether any assignments to C<$VERSION> should be stripped out of
+the source.  This is a crude hack and acts by killing a line of code containing
+such assignments.  This obviously may not work in all cases and should be used
+with caution.  Default is false.
+
+=cut
+
+has strip_version => (
+  is    => 'ro',
+  isa   => 'Bool',
+  default => 0,
+);
+
 =attr strip_pod
 
 Boolean for whether Pod should be stripped when copying from source.
 Default is false.
+
 
 =cut
 
@@ -192,6 +208,7 @@ sub gather_files {
     my $dz_file = $self->_file_from_filename($filename, $file);
     $self->_munge_filename($dz_file);
     $self->_munge_file($dz_file);
+    $self->_strip_version($dz_file);
     $self->_strip_pod($dz_file);
     $self->add_file($dz_file);
   }
@@ -225,6 +242,19 @@ sub _munge_file {
   my $content = $file->content;
   $content =~ s{$old_name}{$new_name}g;
   $file->content($content);
+}
+
+# match a line that appears to assign to a $VERSION variable
+# it's a bit more liberal on package names that Perl allows, oh, well
+my $version_re = qr/\$(?:(?i)[a-z0-9]+::){0,}VERSION\s*=\s*/;
+sub _strip_version {
+  my ($self, $file) = @_;
+  return unless $self->strip_version;
+  return unless
+    $file->name =~ m{\.pm\z} or $file->content =~ /\A#!.*?perl/;
+  $self->log_debug([ 'stripping VERSION from %s', $file->name ]);
+  my @lines = grep { $_ !~ $version_re } split "\n", $file->content;
+  $file->content( join("\n",@lines) );
 }
 
 sub _strip_pod {

@@ -29,7 +29,6 @@ The name of a CPAN module to imitate.  E.g. Foo::Bar
 has source_module => (
   is    => 'ro',
   isa   => ModuleName,
-  coerce => 1,
   required => 1,
 );
   
@@ -42,7 +41,6 @@ The new name to use in place of the source name
 has new_name => (
   is    => 'ro',
   isa   => ModuleName,
-  coerce => 1,
   required => 1,
 );
 

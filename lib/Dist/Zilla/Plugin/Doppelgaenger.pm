@@ -65,7 +65,7 @@ sub _build_new_name {
 =attr cpan_mirror
 
 This is a URI to a CPAN mirror.  It must be an 'http' URI.
-Defaults to C<http://cpan.dagolden.com/>
+Defaults to C<http://www.cpan.org/>
 
 =cut
 
@@ -73,7 +73,7 @@ has cpan_mirror => (
   is    => 'ro',
   isa   => Uri,
   coerce => 1,
-  default => 'http://cpan.dagolden.com/'
+  default => 'http://www.cpan.org/'
 );
 
 =attr strip_version

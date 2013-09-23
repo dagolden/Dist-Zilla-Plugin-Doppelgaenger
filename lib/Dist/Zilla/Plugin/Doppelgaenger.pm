@@ -253,7 +253,11 @@ sub _strip_version {
       unless $file->name =~ m{\.pm\z}
       or $file->content =~ /\A#!.*?perl/;
     $self->log_debug( [ 'stripping VERSION from %s', $file->name ] );
-    my @lines = grep { $_ !~ $version_re } split "\n", $file->content;
+    # replace
+    my @lines =
+      map { /$version_re/ ? '; # original $VERSION removed by Doppelgaenger' : $_ }
+      split "\n",
+      $file->content;
     $file->content( join( "\n", @lines ) . "\n" );
 }
 
@@ -334,7 +338,6 @@ sub _file_from_filename {
 }
 
 __PACKAGE__->meta->make_immutable;
-no Moose;
 1;
 
 =for Pod::Coverage gather_files munge_file after_release

@@ -2,6 +2,7 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::Doppelgaenger;
 # ABSTRACT: Creates an evil twin of a CPAN distribution
+# VERSION
 
 use Moose;
 use Moose::Autobox;
@@ -327,7 +328,7 @@ sub _file_from_filename {
 
   my $file = Dist::Zilla::File::InMemory->new({
     name => "$rel_name",
-    mode => (stat $filename)[2] & 0755, # kill world-writeability
+    mode => (stat $filename)[2] & 0755, ## no critic: kill world-writeability
     content => do { local (@ARGV,$/)="$filename"; <> },
   });
   return $file;

@@ -15,7 +15,7 @@ with 'Dist::Zilla::Role::TextTemplate';
 with 'Dist::Zilla::Role::FileMunger';   # for Changes
 with 'Dist::Zilla::Role::AfterRelease'; # for Changes
 
-use Dist::Zilla::File::InMemory;
+use Dist::Zilla::File::InMemory 5;      # encoded_content
 use File::Find::Rule;
 use File::pushd qw/tempd/;
 use Path::Class;
@@ -333,11 +333,16 @@ sub _download {
 sub _file_from_filename {
     my ( $self, $filename, $rel_name ) = @_;
 
+    open my $fh, "<:unix", "$filename";
+    binmode $fh;
+    my $raw = do { local $/; <$fh> };
+    close $fh;
+
     my $file = Dist::Zilla::File::InMemory->new(
         {
             name => "$rel_name",
             mode => ( stat $filename )[2] & 0755, ## no critic: kill world-writeability
-            content => do { local ( @ARGV, $/ ) = "$filename"; <> },
+            encoded_content => $raw,
         }
     );
     return $file;

@@ -132,6 +132,35 @@ has update_changes_file => (
     default => 1,
 );
 
+sub mvp_multivalue_args { qw(exclude_filename exclude_match) }
+
+=attr exclude_filename
+
+To exclude certain files from being gathered, use the C<exclude_filename>
+option. This may be used multiple times to specify multiple files to exclude.
+
+=cut
+
+has exclude_filename => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+);
+
+=attr exclude_match
+
+This is just like C<exclude_filename> but provides a regular expression
+pattern.  Files matching the pattern are not gathered.  This may be used
+multiple times to specify multiple patterns to exclude.
+
+=cut
+
+has exclude_match => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+);
+
 #--------------------------------------------------------------------------#
 # private
 #--------------------------------------------------------------------------#
@@ -203,11 +232,18 @@ sub gather_files {
     die "Couldn't find untarred folder for $tarball\n"
       unless $extracted;
 
+    my $exclude_regex = qr/\000/;
+    $exclude_regex = qr/$exclude_regex|$_/ for ( $self->exclude_match->flatten );
+
+    my %is_excluded = map { ; $_ => 1 } $self->exclude_filename->flatten;
+
     FILE: for my $filename ( grep { -f } @{ $ae->files } ) {
         my $file = file($filename)->relative($extracted);
         next FILE if $file->basename =~ qr/^\./;
         next FILE if grep { /^\.[^.]/ } $file->dir->dir_list;
         next FILE unless $file =~ /^(?:lib|t|bin)\//;
+        next FILE if $file =~ $exclude_regex;
+        next FILE if $is_excluded{$file};
         $self->log_debug( [ 'selected %s', $filename ] );
         my $dz_file = $self->_file_from_filename( $filename, $file );
         $self->_munge_filename($dz_file);
@@ -359,7 +395,7 @@ sub _file_from_filename {
 __PACKAGE__->meta->make_immutable;
 1;
 
-=for Pod::Coverage gather_files munge_file after_release
+=for Pod::Coverage gather_files munge_file after_release mvp_multivalue_args
 
 =head1 SYNOPSIS
 

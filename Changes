@@ -2,6 +2,8 @@ Revision history for Dist-Zilla-Plugin-Doppelgaenger
 
 {{$NEXT}}
 
+0.006     2014-02-05 22:01:28-05:00 America/New_York
+
     [FIXED]
 
     - Requires Dist::Zilla 5 and is updated to respect new encodings API

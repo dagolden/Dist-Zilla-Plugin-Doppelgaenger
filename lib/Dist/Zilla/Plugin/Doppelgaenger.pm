@@ -176,6 +176,12 @@ sub _build_short_distfile {
     return $distfile;
 }
 
+has _files_added => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { {} },
+);
+
 #--------------------------------------------------------------------------#
 # methods
 #--------------------------------------------------------------------------#
@@ -205,10 +211,8 @@ sub gather_files {
         $self->log_debug( [ 'selected %s', $filename ] );
         my $dz_file = $self->_file_from_filename( $filename, $file );
         $self->_munge_filename($dz_file);
-        $self->_munge_file($dz_file);
-        $self->_strip_version($dz_file);
-        $self->_strip_pod($dz_file);
         $self->add_file($dz_file);
+        $self->_files_added->{ $dz_file->name } = 1;
     }
 
     return;
@@ -282,6 +286,10 @@ sub _strip_pod {
 sub munge_file {
     my ( $self, $file ) = @_;
     $self->_munge_changes($file) if $file->name eq $self->changes_file;
+    return unless $self->_files_added->{ $file->name };
+    $self->_munge_file($file);
+    $self->_strip_version($file);
+    $self->_strip_pod($file);
 }
 
 sub _munge_changes {

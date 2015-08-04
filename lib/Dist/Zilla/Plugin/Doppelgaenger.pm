@@ -335,9 +335,10 @@ sub _munge_changes {
     my $content  = $file->content;
     my $distfile = $self->_short_distfile;
     my $delim    = $self->delim;
+    my $url      = $self->_changes_url($distfile);
 
     $content =~ s{ (\Q$delim->[0]\E \s* \$NEXT \s* \Q$delim->[1]\E) }
-               {$1\n\n  - Generated from $distfile}xs;
+               {$1\n\n  - Generated from $distfile\n\n  - See $url for details}xs;
 
     $file->content($content);
 }
@@ -372,6 +373,15 @@ sub _download {
     die "Could not download $uri\n"
       unless $response->{success};
     return $tarball;
+}
+
+my $archive_re = qr{\.tar\.gz|\.tgz|\.zip|\.tar\.bz|\.tbz};
+
+sub _changes_url {
+    my ( $self, $distfile ) = @_;
+
+    $distfile =~ s{$archive_re$}{};
+    return "https://metacpan.org/changes/release/$distfile";
 }
 
 sub _file_from_filename {
@@ -419,6 +429,8 @@ your original Changes file might look something like this:
   0.001     2010-12-17 08:37:08 EST5EDT
 
     - Generated from AUTHOR/Foo-Bar-1.23.tar.gz
+
+    - See https://metacpan.org/changes/release/AUTHOR/Foo-Bar-1.23 for details
 
 If you strip Pod, you may with to explore replacing it with new Pod using
 the L<Dist::Zilla::Plugin::AppendExternalData> plugin.

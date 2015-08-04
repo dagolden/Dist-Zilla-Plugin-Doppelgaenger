@@ -2,6 +2,8 @@ Revision history for Dist-Zilla-Plugin-Doppelgaenger
 
 {{$NEXT}}
 
+0.008     2015-08-04 12:03:15-04:00 America/New_York
+
     [ADDED]
 
     - URL for MetaCPAN Changes entry for the source distribution gets

@@ -4,7 +4,7 @@ use warnings;
 package Dist::Zilla::Plugin::Doppelgaenger;
 # ABSTRACT: Creates an evil twin of a CPAN distribution
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 use Moose;
 use MooseX::Types::Path::Class qw(Dir File);

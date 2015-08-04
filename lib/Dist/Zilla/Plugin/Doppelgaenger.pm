@@ -3,10 +3,10 @@ use warnings;
 
 package Dist::Zilla::Plugin::Doppelgaenger;
 # ABSTRACT: Creates an evil twin of a CPAN distribution
-# VERSION
+
+our $VERSION = '0.008';
 
 use Moose;
-use Moose::Autobox;
 use MooseX::Types::Path::Class qw(Dir File);
 use MooseX::Types::URI qw(Uri);
 use MooseX::Types::Perl qw(ModuleName);
@@ -233,9 +233,9 @@ sub gather_files {
       unless $extracted;
 
     my $exclude_regex = qr/\000/;
-    $exclude_regex = qr/$exclude_regex|$_/ for ( $self->exclude_match->flatten );
+    $exclude_regex = qr/$exclude_regex|$_/ for ( @{ $self->exclude_match } );
 
-    my %is_excluded = map { ; $_ => 1 } $self->exclude_filename->flatten;
+    my %is_excluded = map { ; $_ => 1 } @{ $self->exclude_filename };
 
     FILE: for my $filename ( grep { -f } @{ $ae->files } ) {
         my $file = file($filename)->relative($extracted);
